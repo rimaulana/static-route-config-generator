@@ -1,0 +1,40 @@
+{
+    "name": "static-route-config-generator",
+    "version": "1.0.0",
+    "description": "Generate static routing configuration syntax for AWS prefixes",
+    "main": "index.js",
+    "scripts": {
+        "cisco": "node app.js -- -vendor=\"cisco\"",
+        "fortigate": "node app.js -- -vendor=\"fortigate\"",
+        "mikrotik": "node app.js -- -vendor=\"mikrotik\"",
+        "generate": "node app.js",
+        "build": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec tests/test.js"
+    },
+    "config": {
+        "gateway": "10.10.10.1",
+        "administrative-distance": "",
+        "out-interface": "ether1",
+        "comment": "pull-to-aws",
+        "regions": ["ap-southeast-1", "ap-southeast-2"],
+        "cisco": {
+            "tracking": "1"
+        },
+        "fortigate": {
+            "starting-sequence": "23"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rimaulana/static-route-config-generator.git"
+    },
+    "keywords": ["config", "generator", "aws", "prefixes", "static", "route", "cisco", "mikrotik", "fortigate"],
+    "author": "Rio Maulana <rimaulana@outlook.com> (https://github.com/rimaulana)",
+    "license": "MIT",
+    "dependencies": {},
+    "devDependencies": {
+        "chai": "^4.1.2",
+        "coveralls": "^3.0.0",
+        "istanbul": "^0.4.5",
+        "mocha": "^4.0.1"
+    }
+}
