@@ -1,11 +1,11 @@
-# static-route-config-generator
+# Static Route Config Generator
 
 [![Build Status](https://travis-ci.org/rimaulana/static-route-config-generator.svg?branch=master)](https://travis-ci.org/rimaulana/static-route-config-generator)
 [![Coverage Status](https://coveralls.io/repos/github/rimaulana/static-route-config-generator/badge.svg?branch=master)](https://coveralls.io/github/rimaulana/static-route-config-generator?branch=master)
 
 This utility will help you generate static routes configuration for Cisco, Fortigate and Mikrotik devices from online json file as well as local txt.
 
-## Instalation
+## Installation
 
 You need to clone this repository then run
 
@@ -103,6 +103,71 @@ or you can do
 
 ```bash
 npm run generate -- -vendor="mikrotik" -url="./tests/routes.txt"
+```
+
+## Sample input and output
+
+input file contains
+
+```text
+172.16.28.0/24
+empty
+routes:172.18.78.0/26
+# 202.128.239.0/29
+// 202.128.239.0/27
+```
+
+while config file
+
+```json
+{
+    "config": {
+        "gateway": "192.168.99.1",
+        "administrative-distance": "",
+        "out-interface": "ether1",
+        "comment": "pull-to-aws",
+        "regions": ["ap-southeast-1", "ap-southeast-2"],
+        "cisco": {
+            "tracking": "1"
+        },
+        "fortigate": {
+            "starting-sequence": ""
+        }
+    }
+}
+```
+
+### Cisco config
+
+```text
+ip route 172.16.28.0 255.255.255.0 ether1 track 1
+ip route 172.18.78.0 255.255.255.192 ether1 track 1
+```
+
+### Mikrotik config
+
+```text
+/ip route
+add dst-address=172.16.28.0/24 gateway=ether1 comment="pull-to-aws"
+add dst-address=172.18.78.0/26 gateway=ether1 comment="pull-to-aws"
+```
+
+### Fortigate config
+
+```text
+config router static
+edit 1
+set dst 172.16.28.0/24
+set gateway 192.168.99.1
+set device "ether1"
+set comment "pull-to-aws"
+next
+edit 2
+set dst 172.18.78.0/26
+set gateway 192.168.99.1
+set device "ether1"
+set comment "pull-to-aws"
+next
 ```
 
 ## Testing this Code

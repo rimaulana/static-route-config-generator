@@ -109,7 +109,8 @@ function run(param, callback) {
 
             if (data[0].constructor === Array) {
                 for (var i in data[0]) {
-                    var parsed = data[0][i].match(ipPattern);
+                    var parsed = data[0][i].replace(/(?:#|\/\/).*/, "");
+                    parsed = parsed.match(ipPattern);
                     if (parsed) {
                         result +=
                             generate(
@@ -141,14 +142,16 @@ function run(param, callback) {
                         }
                     }
                 } catch (error) {
-                    var parseRaw = data[0].match(ipPattern);
-                    if (parseRaw) {
-                        for (var i in parseRaw) {
+                    var lines = data[0].split("\n");
+                    for (var x in lines) {
+                        var parseRaw = lines[x].replace(/(?:#|\/\/).*/, "");
+                        parseRaw = parseRaw.match(ipPattern);
+                        if (parseRaw) {
                             result +=
                                 generate(
                                     {
                                         vendor: vendor.toLowerCase(),
-                                        prefix: parseRaw[i],
+                                        prefix: parseRaw[0],
                                         config: config
                                     },
                                     sequence

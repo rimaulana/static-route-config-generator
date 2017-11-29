@@ -144,7 +144,7 @@ describe("Generate mikrotik config command", function() {
                 url: "./tests/routes.txt"
             },
             function(error, data) {
-                expect(data).to.be.equal('/ip route\nadd dst-address=172.16.28.0/24 gateway=ether1 comment="pull-to-aws"\nadd dst-address=172.18.78.9/26 gateway=ether1 comment="pull-to-aws"\n');
+                expect(data).to.be.equal('/ip route\nadd dst-address=172.16.28.0/24 gateway=ether1 comment="pull-to-aws"\nadd dst-address=172.18.78.0/26 gateway=ether1 comment="pull-to-aws"\n');
             }
         );
     });
@@ -172,7 +172,7 @@ describe("Generate fortigate config command", function() {
             },
             function(error, data) {
                 expect(data).to.be.equal(
-                    'config router static\nedit 23\nset dst 172.16.28.0/24\nset gateway 10.10.10.1\nset device "ether1"\nset comment "pull-to-aws"\nnext\nedit 24\nset dst 172.18.78.9/26\nset gateway 10.10.10.1\nset device "ether1"\nset comment "pull-to-aws"\nnext\n'
+                    'config router static\nedit 23\nset dst 172.16.28.0/24\nset gateway 10.10.10.1\nset device "ether1"\nset comment "pull-to-aws"\nnext\nedit 24\nset dst 172.18.78.0/26\nset gateway 10.10.10.1\nset device "ether1"\nset comment "pull-to-aws"\nnext\n'
                 );
             }
         );
@@ -187,7 +187,7 @@ describe("Generate cisco config command", function() {
                 url: "https://raw.githubusercontent.com/rimaulana/static-route-config-generator/master/tests/routes.txt"
             },
             function(error, data) {
-                expect(data).to.be.equal("ip route 172.16.28.0 255.255.255.0 ether1 track 1\nip route 172.18.78.9 255.255.255.192 ether1 track 1\n");
+                expect(data).to.be.equal("ip route 172.16.28.0 255.255.255.0 ether1 track 1\nip route 172.18.78.0 255.255.255.192 ether1 track 1\n");
             }
         );
     });
@@ -208,7 +208,7 @@ describe("Generate cisco config command", function() {
                 url: "./tests/routes.txt"
             },
             function(error, data) {
-                expect(data).to.be.equal("ip route 172.16.28.0 255.255.255.0 ether1 track 1\nip route 172.18.78.9 255.255.255.192 ether1 track 1\n");
+                expect(data).to.be.equal("ip route 172.16.28.0 255.255.255.0 ether1 track 1\nip route 172.18.78.0 255.255.255.192 ether1 track 1\n");
             }
         );
     });
@@ -226,20 +226,6 @@ describe("Generator run error handling", function() {
     });
 });
 describe("File error handling", function() {
-    it("Should generate from online file source", function(done) {
-        generator.run(
-            {
-                vendor: "fortigate",
-                url: "https://raw.githubusercontent.com/rimaulana/static-route-config-generator/master/tests/routes.txt"
-            },
-            function(error, data) {
-                // console.log(data);
-                // console.log(error.message);
-                // expect(error).to.have.property("message");
-                done();
-            }
-        );
-    });
     it("Download from non-existent local text file should return error", function() {
         generator.run(
             {
