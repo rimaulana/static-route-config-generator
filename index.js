@@ -64,12 +64,7 @@ function getdata(url) {
                     result += data;
                 });
                 res.on("end", function() {
-                    try {
-                        result = JSON.parse(result);
-                        resolve(result);
-                    } catch (error) {
-                        reject(error);
-                    }
+                    resolve(result);
                 });
             })
             .on("error", e => {
@@ -79,6 +74,10 @@ function getdata(url) {
 }
 
 function run(param, callback) {
+    if (!callback) {
+        throw new Error("Callback is not defined");
+    }
+    const ipPattern = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\s+)?\/(?:\s+)?\d{1,2}/g;
     const vendor = param.vendor;
     const url = param.url || endpoint;
     var result = "";
@@ -101,32 +100,22 @@ function run(param, callback) {
     Promise.all(promises)
         .then(data => {
             var sequence = parseInt(config.fortigate["starting-sequence"]);
+
             if (vendor.toLowerCase() === "fortigate") {
                 result += "config router static\n";
             } else if (vendor.toLowerCase() === "mikrotik") {
                 result += "/ip route\n";
             }
+
             if (data[0].constructor === Array) {
                 for (var i in data[0]) {
-                    result +=
-                        generate(
-                            {
-                                vendor: vendor.toLowerCase(),
-                                prefix: data[0][i],
-                                config: config
-                            },
-                            sequence
-                        ) + "\n";
-                    sequence += 1;
-                }
-            } else {
-                for (var i in data[0].prefixes) {
-                    if (config.regions.includes(data[0].prefixes[i].region)) {
+                    var parsed = data[0][i].match(ipPattern);
+                    if (parsed) {
                         result +=
                             generate(
                                 {
                                     vendor: vendor.toLowerCase(),
-                                    prefix: data[0].prefixes[i].ip_prefix,
+                                    prefix: parsed[0],
                                     config: config
                                 },
                                 sequence
@@ -134,16 +123,45 @@ function run(param, callback) {
                         sequence += 1;
                     }
                 }
+            } else {
+                try {
+                    var parseRaw = JSON.parse(data[0]);
+                    for (var i in parseRaw.prefixes) {
+                        if (config.regions.includes(parseRaw.prefixes[i].region)) {
+                            result +=
+                                generate(
+                                    {
+                                        vendor: vendor.toLowerCase(),
+                                        prefix: parseRaw.prefixes[i].ip_prefix,
+                                        config: config
+                                    },
+                                    sequence
+                                ) + "\n";
+                            sequence += 1;
+                        }
+                    }
+                } catch (error) {
+                    var parseRaw = data[0].match(ipPattern);
+                    if (parseRaw) {
+                        for (var i in parseRaw) {
+                            result +=
+                                generate(
+                                    {
+                                        vendor: vendor.toLowerCase(),
+                                        prefix: parseRaw[i],
+                                        config: config
+                                    },
+                                    sequence
+                                ) + "\n";
+                            sequence += 1;
+                        }
+                    }
+                }
             }
-            if (callback) {
-                callback(null, result);
-            }
+            callback(null, result);
         })
         .catch(error => {
-            // console.log(error);
-            if (callback) {
-                callback(error, null);
-            }
+            callback(error, null);
         });
 }
 
