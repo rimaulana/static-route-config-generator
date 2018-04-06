@@ -15,7 +15,10 @@
         "administrative-distance": "",
         "out-interface": "ether1",
         "comment": "pull-to-aws",
-        "regions": ["ap-southeast-1", "ap-southeast-2"],
+        "regions": [
+            "ap-southeast-1",
+            "ap-southeast-2"
+        ],
         "cisco": {
             "tracking": "1"
         },
@@ -27,7 +30,17 @@
         "type": "git",
         "url": "https://github.com/rimaulana/static-route-config-generator.git"
     },
-    "keywords": ["config", "generator", "aws", "prefixes", "static", "route", "cisco", "mikrotik", "fortigate"],
+    "keywords": [
+        "config",
+        "generator",
+        "aws",
+        "prefixes",
+        "static",
+        "route",
+        "cisco",
+        "mikrotik",
+        "fortigate"
+    ],
     "author": "Rio Maulana <rimaulana@outlook.com> (https://github.com/rimaulana)",
     "license": "MIT",
     "dependencies": {},
