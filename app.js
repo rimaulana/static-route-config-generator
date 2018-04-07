@@ -1,25 +1,31 @@
-"use strict";
-var generator = require("./index");
+const generator = require('./index');
 
-if (process.argv.length > 2) {
-    for (var i = 0; i <= process.argv.length; i++) {
-        if (/\-vendor(?:\:|\=)(?:\")?([^"]+)(?:\")?/.test(process.argv[i])) {
-            var vendorArg = process.argv[i].match(/\-vendor(?:\:|\=)(?:\")?([^"]+)(?:\")?/)[1];
-        } else if (/\-url(?:\:|\=)(?:\")?([^"]+)(?:\")?/.test(process.argv[i])) {
-            var urlArg = process.argv[i].match(/\-url(?:\:|\=)(?:\")?([^"]+)(?:\")?/)[1];
-        }
+let vendorArg = 'mikrotik';
+let urlArg = null;
+
+const vendorRegex = new RegExp('\\-vendor(?:\\:|\\=)(?:\\")?([^"]+)(?:\\")?');
+const urlRegex = new RegExp('\\-url(?:\\:|\\=)(?:\\")?([^"]+)(?:\\")?');
+
+const getArgument = (arg, type) => {
+  const regex = type === 'vendor' ? vendorRegex : urlRegex;
+  let result = null;
+  arg.forEach((argv) => {
+    if (regex.test(argv)) {
+      result = argv.split('=')[1].replace('"', '');
     }
+  });
+  return result;
+};
+
+if (process.argv.length > 1) {
+  vendorArg = getArgument(process.argv, 'vendor') || vendorArg;
+  urlArg = getArgument(process.argv, 'url') || null;
 }
-generator.run(
-    {
-        vendor: vendorArg || "mikrotik",
-        url: urlArg || null
-    },
-    function(error, data) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log(data);
-        }
-    }
-);
+
+generator.run({ vendor: vendorArg, url: urlArg }, (error, data) => {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log(data);
+  }
+});
