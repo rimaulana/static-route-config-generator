@@ -1,10 +1,8 @@
 const https = require('https');
 
-const endpoint = 'https://ip-ranges.amazonaws.com/ip-ranges.json';
-const { config } = require('./package');
 const fs = require('fs');
 
-const { filters } = config;
+let filters = [];
 
 const download = url => new Promise(((resolve, reject) => {
   let result = '';
@@ -45,13 +43,18 @@ const filterData = (prefix, buffer) => {
     insertData(prefix.ip_prefix, buffer);
   }
   // if there is filter, check data against filter
+  let matched = 0;
   filters.forEach((filter) => {
     if (prefix[filter.Key]) {
       if (filter.Values.indexOf(prefix[filter.Key]) > -1) {
-        insertData(prefix.ip_prefix, buffer);
+        matched += 1;
       }
     }
   });
+
+  if (matched > 0) {
+    insertData(prefix.ip_prefix, buffer);
+  }
 };
 
 const cleanData = (prefix, buffer) => {
@@ -83,15 +86,17 @@ const getPrefixes = async (data) => {
   }
 };
 
-const getData = url => new Promise((resolve, reject) => {
+const getData = (url, inputFilter = []) => new Promise((resolve, reject) => {
   const urlRegex = new RegExp('(http[s]?:\\/\\/)([^\\/\\s]+\\/)(.*)');
   const data = url.match(urlRegex) ? download(url) : open(url);
-  data.then(getPrefixes)
+  filters = inputFilter;
+  data
+    .then(getPrefixes)
     .then((result) => {
       resolve(result);
     })
     .catch((error) => {
-      resolve(error);
+      reject(error);
     });
 });
 
