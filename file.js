@@ -4,7 +4,7 @@ const endpoint = 'https://ip-ranges.amazonaws.com/ip-ranges.json';
 const { config } = require('./package');
 const fs = require('fs');
 
-const filters = [];
+const { filters } = config;
 
 const download = url => new Promise(((resolve, reject) => {
   let result = '';
@@ -40,9 +40,14 @@ const insertData = (item, buffer) => {
 };
 
 const filterData = (prefix, buffer) => {
+  // if no filter defined then put all data into result
+  if (filters.length === 0) {
+    insertData(prefix.ip_prefix, buffer);
+  }
+  // if there is filter, check data against filter
   filters.forEach((filter) => {
     if (prefix[filter.Key]) {
-      if (filter.Value.indexOf(prefix[filter.Key]) > -1) {
+      if (filter.Values.indexOf(prefix[filter.Key]) > -1) {
         insertData(prefix.ip_prefix, buffer);
       }
     }
@@ -50,7 +55,15 @@ const filterData = (prefix, buffer) => {
 };
 
 const cleanData = (prefix, buffer) => {
-  buffer.push(prefix);
+  const regexCommented = new RegExp('(?:#|\\/\\/).*');
+  const regexIPPrefix = new RegExp('\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}(?:\\s+)?\\/(?:\\s+)?\\d{1,2}');
+  // return empty string when line is commented or remove comment
+  const clean = prefix.replace(regexCommented, '');
+  // find for IP Prefix pattern
+  const matched = clean.match(regexIPPrefix);
+  if (matched) {
+    insertData(matched[0], buffer);
+  }
 };
 
 const getPrefixes = async (data) => {
@@ -68,4 +81,20 @@ const getPrefixes = async (data) => {
   } finally {
     return result;
   }
+};
+
+const getData = url => new Promise((resolve, reject) => {
+  const urlRegex = new RegExp('(http[s]?:\\/\\/)([^\\/\\s]+\\/)(.*)');
+  const data = url.match(urlRegex) ? download(url) : open(url);
+  data.then(getPrefixes)
+    .then((result) => {
+      resolve(result);
+    })
+    .catch((error) => {
+      resolve(error);
+    });
+});
+
+module.exports = {
+  getData,
 };
