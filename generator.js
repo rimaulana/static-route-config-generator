@@ -1,6 +1,6 @@
 const tomask = (input) => {
   const mask = [];
-  let bitCount = input || 32;
+  let bitCount = input;
   [1, 2, 3, 4].forEach(() => {
     const n = Math.min(bitCount, 8);
     mask.push(256 - (2 ** (8 - n)));
