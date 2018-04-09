@@ -3,12 +3,18 @@
     "version": "1.0.0",
     "description": "Generate static routing configuration syntax for AWS prefixes",
     "main": "index.js",
+    "nyc": {
+        "exclude": [
+            "tests/*.js"
+        ]
+    },
     "scripts": {
         "cisco": "node app.js -- -vendor=\"cisco\"",
         "fortigate": "node app.js -- -vendor=\"fortigate\"",
         "mikrotik": "node app.js -- -vendor=\"mikrotik\"",
         "generate": "node app.js",
-        "build": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec tests/test.js"
+        "test": "node_modules/nyc/bin/nyc.js --reporter=text-summary node_modules/mocha/bin/mocha --reporter=nyan tests/*.js",
+        "coverage": "node_modules/nyc/bin/nyc.js report --reporter=lcov"
     },
     "config": {
         "gateway": "10.10.10.1",
@@ -52,7 +58,8 @@
     "devDependencies": {
         "chai": "^4.1.2",
         "coveralls": "^3.0.0",
-        "istanbul": "^0.4.5",
-        "mocha": "^4.0.1"
+        "mocha": "^4.0.1",
+        "nyc": "^11.6.0",
+        "sinon": "^4.5.0"
     }
 }

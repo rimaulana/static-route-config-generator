@@ -1,8 +1,8 @@
-const generator = require('./index');
+const generator = require('./generator');
 const downloader = require('./file');
 
 let vendorArg = 'mikrotik';
-let urlArg = null;
+let urlArg = 'https://ip-ranges.amazonaws.com/ip-ranges.json';
 
 const { config } = require('./package');
 
@@ -22,7 +22,7 @@ const getArgument = (arg, type) => {
 
 if (process.argv.length > 1) {
   vendorArg = getArgument(process.argv, 'vendor') || vendorArg;
-  urlArg = getArgument(process.argv, 'url') || null;
+  urlArg = getArgument(process.argv, 'url') || urlArg;
 }
 
 downloader.getData(urlArg, config.filters)
