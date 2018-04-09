@@ -14,7 +14,7 @@
         "mikrotik": "node app.js -- -vendor=\"mikrotik\"",
         "generate": "node app.js",
         "test": "node_modules/nyc/bin/nyc.js --reporter=text-summary node_modules/mocha/bin/mocha --reporter=nyan tests/*.js",
-        "coverage": "node_modules/nyc/bin/nyc.js report --reporter=text-lcov | node_modules/.bin/coveralls",
+        "coverage": "node_modules/nyc/bin/nyc.js report --reporter=lcov",
         "build": "npm run test && npm run coverage"
     },
     "config": {
