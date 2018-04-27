@@ -1,7 +1,6 @@
 # Static Route Config Generator
 
-[![Build Status](https://travis-ci.org/rimaulana/static-route-config-generator.svg?branch=master)](https://travis-ci.org/rimaulana/static-route-config-generator)
-[![Coverage Status](https://coveralls.io/repos/github/rimaulana/static-route-config-generator/badge.svg?branch=master)](https://coveralls.io/github/rimaulana/static-route-config-generator?branch=master)
+[![CircleCI](https://img.shields.io/circleci/project/github/rimaulana/static-route-config-generator.svg)](https://circleci.com/gh/rimaulana/static-route-config-generator/tree/master) [![codecov](https://codecov.io/gh/rimaulana/static-route-config-generator/branch/master/graph/badge.svg)](https://codecov.io/gh/rimaulana/static-route-config-generator) [![codebeat badge](https://codebeat.co/badges/dcef7362-7fc7-4c3d-bed7-97c28f22f7f7)](https://codebeat.co/projects/github-com-rimaulana-static-route-config-generator-master) [![Maintainability](https://api.codeclimate.com/v1/badges/9404c62584bd01ddfd59/maintainability)](https://codeclimate.com/github/rimaulana/static-route-config-generator/maintainability) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 This utility will help you generate static routes configuration for Cisco, Fortigate and Mikrotik devices from online json file as well as local txt.
 
@@ -24,7 +23,15 @@ Additional configuration for this script is defined in package.json file section
         "administrative-distance": "",
         "out-interface": "ether1",
         "comment": "pull-to-aws",
-        "regions": ["ap-southeast-1", "ap-southeast-2"],
+        "filters": [
+            {
+                "Key": "region",
+                "Values": [
+                    "ap-southeast-1",
+                    "ap-southeast-2"
+                ]
+            }
+        ],
         "cisco": {
             "tracking": "1"
         },
@@ -52,9 +59,9 @@ generating config for Fortigate and this is optional for Mikrotik and cisco as l
 
 I think the name itself is self explanatory
 
-### regions
+### filters
 
-by default if we run the script, it will read a online json file from Amazon prefixes (https://ip-ranges.amazonaws.com/ip-ranges.json). So the regions config stated here is required to filter the prefixes from which region you want to generate.
+by default if we run the script, it will read a online json file from Amazon prefixes (https://ip-ranges.amazonaws.com/ip-ranges.json). So the filter we defined here will filter the data based on key and value we provide. In this example, we will get only prefixes that also has region property with the values defined. The limitation of the filter is that it can only work with a valid JSON data.
 
 ### cisco tracking
 
@@ -92,7 +99,7 @@ npm run generate
 
 ### parameters
 
-The above command can be chainned with additional parameters, the available parameters are: -vendor="vendor_name" only support mikrotik, cisco, fortigate -url="file-location" can be online url or local path to file for example we want to generate
+The above command can be chained with additional parameters, the available parameters are: -vendor="vendor_name" only support mikrotik, cisco, fortigate -url="file-location" can be online url or local path to file for example we want to generate
 mikrotik config from local file in ./tests/routes.txt
 
 ```bash
@@ -126,7 +133,7 @@ while config file
         "administrative-distance": "",
         "out-interface": "ether1",
         "comment": "pull-to-aws",
-        "regions": ["ap-southeast-1", "ap-southeast-2"],
+        "filters": [], 
         "cisco": {
             "tracking": "1"
         },
