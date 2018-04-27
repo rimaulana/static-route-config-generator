@@ -2,6 +2,7 @@ version: 2.0
 jobs:
   build:
     machine:
+      image: circleci/classic:edge
       node:
         version: 8.10.0
     steps:
