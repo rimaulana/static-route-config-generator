@@ -13,7 +13,7 @@ jobs:
           command: npm run build
       - run:
           name: Install codeclimate reporter
-          command: npm install -g codeclimate-test-reporter
+          command: sudo npm install -g codeclimate-test-reporter
       - run:
           name: Upload test result to codeclimate
           command: codeclimate-test-reporter < coverage/lcov.info
