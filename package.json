@@ -1,6 +1,6 @@
 {
     "name": "static-route-config-generator",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Generate static routing configuration syntax for AWS prefixes",
     "main": "index.js",
     "nyc": {
